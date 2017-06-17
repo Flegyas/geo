@@ -1,16 +1,11 @@
 package com.github.davidmoten.geo;
 
-import static com.github.davidmoten.grumpy.core.Position.to180;
-
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
 import com.github.davidmoten.geo.util.Preconditions;
 import com.github.davidmoten.grumpy.core.Position;
+
+import java.util.*;
+
+import static com.github.davidmoten.grumpy.core.Position.to180;
 
 /**
  * <p>
@@ -366,7 +361,7 @@ public final class GeoHash {
      *            bits
      * @return the string encoded geohash
      */
-    static String fromLongToString(long hash) {
+    public static String fromLongToString(long hash) {
         int length = (int) (hash & 0xf);
         if (length > 12 || length < 1)
             throw new IllegalArgumentException("invalid long geohash " + hash);
@@ -378,7 +373,7 @@ public final class GeoHash {
         return new String(geohash);
     }
 
-    static long encodeHashToLong(double latitude, double longitude, int length) {
+    public static long encodeHashToLong(double latitude, double longitude, int length) {
         boolean isEven = true;
         double minLat = -90.0, maxLat = 90;
         double minLon = -180.0, maxLon = 180.0;
@@ -422,7 +417,7 @@ public final class GeoHash {
     // Geohash library for Javascript
     // (c) 2008 David Troy
     // Distributed under the MIT License
-    public static LatLong decodeHash(String geohash) {
+    public static GeoHashInfo decodeHash(String geohash) {
         Preconditions.checkNotNull(geohash, "geohash cannot be null");
         boolean isEven = true;
         double[] lat = new double[2];
@@ -448,7 +443,7 @@ public final class GeoHash {
         double resultLat = (lat[0] + lat[1]) / 2;
         double resultLon = (lon[0] + lon[1]) / 2;
 
-        return new LatLong(resultLat, resultLon);
+        return new GeoHashInfo(geohash, resultLat, resultLon, lat[1], lon[0], lat[0], lon[1]);
     }
 
     /**
@@ -636,7 +631,7 @@ public final class GeoHash {
         }
     }
 
-    static CoverageLongs coverBoundingBoxLongs(double topLeftLat, final double topLeftLon,
+    public static CoverageLongs coverBoundingBoxLongs(double topLeftLat, final double topLeftLon,
             final double bottomRightLat, final double bottomRightLon, final int length) {
         Preconditions.checkArgument(topLeftLat >= bottomRightLat,
                 "topLeftLat must be >= bottomRighLat");
@@ -648,7 +643,7 @@ public final class GeoHash {
 
         LongSet hashes = new LongSet();
 
-        double diff = Position.longitudeDiff(bottomRightLon, topLeftLon);
+        double diff = to180(bottomRightLon) - to180(topLeftLon);
         double maxLon = topLeftLon + diff;
 
         for (double lat = bottomRightLat; lat <= topLeftLat; lat += actualHeightDegreesPerHash) {
