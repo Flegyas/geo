@@ -6,7 +6,7 @@
 	<parent>
 		<groupId>com.github.davidmoten</groupId>
 		<artifactId>geo-parent</artifactId>
-		<version>0.7.6-SNAPSHOT</version>
+		<version>0.7.5-Flegyas</version>
 	</parent>
 	<artifactId>geo-mem</artifactId>
 	<name>${project.artifactId}</name>
@@ -78,13 +78,19 @@
 	</dependencies>
 
 	<build>
-		<plugins>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-jar-plugin</artifactId>
+                <version>2.3</version>
+            </plugin>
 			<plugin>
 				<artifactId>maven-compiler-plugin</artifactId>
 				<version>3.5.1</version>
 				<configuration>
 					<source>${maven.compiler.target}</source>
 					<target>${maven.compiler.target}</target>
+					<includes></includes>
 				</configuration>
 			</plugin>
 			<plugin>

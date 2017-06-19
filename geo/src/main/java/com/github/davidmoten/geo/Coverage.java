@@ -9,9 +9,9 @@ import java.util.stream.Collectors;
 /**
  * A set of hashes and a measure of how well those hashes cover a region.
  * Immutable.
- * 
+ *
  * @author dave
- * 
+ *
  */
 public class Coverage {
 
@@ -28,7 +28,7 @@ public class Coverage {
 
     /**
      * Constructor.
-     * 
+     *
      * @param hashes
      *            set of hashes comprising the coverage
      * @param ratio
@@ -50,7 +50,7 @@ public class Coverage {
 
 /**
      * Returns the hashes which are expected to be all of the same length.
-     * 
+     *
      * @return set of hashes
      */
     public Set<String> getHashes() {
@@ -62,7 +62,7 @@ public class Coverage {
      * the total area of hashes divided by the area of the bounding box in
      * degrees squared. The closer the ratio is to 1 the better the more closely
      * the hashes approximate the bounding box.
-     * 
+     *
      * @return ratio of area of hashes to area of target region.
      */
     public double getRatio() {
@@ -73,7 +73,7 @@ public class Coverage {
      * Returns the length in characters of the first hash returned by an
      * iterator on the hash set. All hashes should be of the same length in this
      * coverage.
-     * 
+     *
      * @return length of the hash
      */
     public int getHashLength() {
@@ -92,14 +92,13 @@ public class Coverage {
      * @return set of hashes with variable length
      */
     public Set<String> getOptimizedHashes() {
-        return optimizeHashes(hashes);
+        return optimizeHashes(hashes, new HashSet<>());
     }
 
-    private Set<String> optimizeHashes(Set<String> hashes) {
+    private Set<String> optimizeHashes(Set<String> hashes, Set<String> result) {
         final int[] grouped = {0};
 
         Set<String> optimizedHashes = new HashSet<>();
-        Set<String> result = new HashSet<>();
         final BiConsumer<String, Set<String>> consumer = (key, value) -> {
             // We got 32 hashes with same prefix, optimization!
             if (value.size() == 32) {
@@ -114,7 +113,7 @@ public class Coverage {
                 .forEach(consumer);
 
         // check if can merge again
-        if (grouped[0] >= 32) result.addAll(optimizeHashes(optimizedHashes));
+        if (grouped[0] >= 32) optimizeHashes(optimizedHashes, result);
         else result.addAll(optimizedHashes);
 
         return result;

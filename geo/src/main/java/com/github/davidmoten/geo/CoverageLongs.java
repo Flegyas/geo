@@ -1,13 +1,15 @@
 package com.github.davidmoten.geo;
 
+import java.util.Arrays;
+
 /**
  * A set of hashes repesented by longs and a measure of how well those hashes
  * cover a region. Immutable.
- * 
+ *
  * @author dave
- * 
+ *
  */
-class CoverageLongs {
+public class CoverageLongs {
 
     /**
      * The hashes providing the coverage.
@@ -24,7 +26,7 @@ class CoverageLongs {
 
     /**
      * Constructor.
-     * 
+     *
      * @param hashes
      *            set of hashes comprising the coverage
      * @param ratio
@@ -39,7 +41,7 @@ class CoverageLongs {
 
     /**
      * Returns the hashes which are expected to be all of the same length.
-     * 
+     *
      * @return set of hashes
      */
     public long[] getHashes() {
@@ -53,7 +55,7 @@ class CoverageLongs {
      * the total area of hashes divided by the area of the bounding box in
      * degrees squared. The closer the ratio is to 1 the better the more closely
      * the hashes approximate the bounding box.
-     * 
+     *
      * @return ratio of area of hashes to area of target region.
      */
     public double getRatio() {
@@ -64,7 +66,7 @@ class CoverageLongs {
      * Returns the length in characters of the first hash returned by an
      * iterator on the hash set. All hashes should be of the same length in this
      * coverage.
-     * 
+     *
      * @return length of the hash
      */
     public int getHashLength() {
@@ -76,7 +78,7 @@ class CoverageLongs {
 
     @Override
     public String toString() {
-        return "Coverage [hashes=" + getHashes() + ", ratio=" + ratio + "]";
+        return "Coverage [hashes=" + Arrays.toString(getHashes()) + ", ratio=" + ratio + "]";
     }
 
     public int getCount() {
