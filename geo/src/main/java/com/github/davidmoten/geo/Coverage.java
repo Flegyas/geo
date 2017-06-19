@@ -1,7 +1,10 @@
 package com.github.davidmoten.geo;
 
+import java.util.HashSet;
 import java.util.Set;
 import java.util.TreeSet;
+import java.util.function.BiConsumer;
+import java.util.stream.Collectors;
 
 /**
  * A set of hashes and a measure of how well those hashes cover a region.
@@ -39,7 +42,7 @@ public class Coverage {
 
     Coverage(CoverageLongs coverage) {
         this.ratio = coverage.getRatio();
-        this.hashes = new TreeSet<String>();
+        this.hashes = new TreeSet<>();
         for(Long l : coverage.getHashes()) {
             hashes.add(GeoHash.fromLongToString(l));
         }
@@ -78,6 +81,43 @@ public class Coverage {
             return 0;
         else
             return hashes.iterator().next().length();
+    }
+
+    /**
+     * !TESTING!
+     *
+     * Optimize the hashes and returns them.
+     * Optimization is a simple merge of 32 geohashes with same prefix to the lower resolution available.
+     *
+     * @return set of hashes with variable length
+     */
+    public Set<String> getOptimizedHashes() {
+        return optimizeHashes(hashes);
+    }
+
+    private Set<String> optimizeHashes(Set<String> hashes) {
+        final int[] grouped = {0};
+
+        Set<String> optimizedHashes = new HashSet<>();
+        Set<String> result = new HashSet<>();
+        final BiConsumer<String, Set<String>> consumer = (key, value) -> {
+            // We got 32 hashes with same prefix, optimization!
+            if (value.size() == 32) {
+                optimizedHashes.add(key);
+                grouped[0]++;
+            } else
+                result.addAll(value);
+        };
+
+        // ..."aa", "ab", "ac"... -> ("a": {"aa", "ab", "ac"})
+        hashes.stream().collect(Collectors.groupingBy(o -> o.substring(0, o.length() - 1), Collectors.toSet()))
+                .forEach(consumer);
+
+        // check if can merge again
+        if (grouped[0] >= 32) result.addAll(optimizeHashes(optimizedHashes));
+        else result.addAll(optimizedHashes);
+
+        return result;
     }
 
     @Override
